@@ -1,1 +1,10 @@
 
+local player = game.Players.LocalPlayer
+
+repeat task.wait() until game:IsLoaded() -- Chờ game load hoàn toàn
+
+-- Tự động chọn Pirates
+game.ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
+print("Đã chọn team Pirates!")
+
+-- Nếu muốn chọn Marines, thay "Pirates" thành "Marines"
