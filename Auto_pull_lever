@@ -1,3 +1,23 @@
+function CollectBlueGear()
+    local BlueGear = getBlueGear()
+    if BlueGear and not BlueGear.CanCollide and BlueGear.Transparency ~= 1 then
+        toTarget(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position,getBlueGear().Position,getBlueGear().CFrame)
+    elseif BlueGear and BlueGear.Transparency == 1 then
+        if (getHighestPoint().CFrame*CFrame.new(0, 211.88, 0).Position-plr.Character.HumanoidRootPart.Position).Magnitude > 10 then 
+            toTarget(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position,getHighestPoint().Position,getHighestPoint().CFrame*CFrame.new(0, 211.88, 0))
+        else
+            workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position,game:GetService("Lighting"):GetMoonDirection() + workspace.CurrentCamera.CFrame.Position)
+            task.wait(.1)
+            game:service("VirtualInputManager"):SendKeyEvent(true, "T", false, game)
+            task.wait()
+            game:service("VirtualInputManager"):SendKeyEvent(false, "T", false, game)
+            task.wait(1.5)
+        end
+    end
+end
+function Webhook_Hop()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Hai14012/Auto_pull_lever/refs/heads/main/mirage.lua?token=GHSAT0AAAAAAC6IDR4SWFM52PDTK6UAXLWUZ6APQ3Q"))()
+end
 function function7()
     local GameTime = "Error"
     local c2 = game.Lighting.ClockTime
@@ -37,7 +57,11 @@ function PullLever()
             })
             task.wait(5)
         elseif not game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then 
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Hai14012/Auto_pull_lever/refs/heads/main/webhook_script?token=GHSAT0AAAAAAC6IDR4TI5BQXVK6HNKKQXTEZ5CEY7A"))()
+            repeat 
+                Webhook_Hop()
+            task.wait(5)
+            
+            until HopServer == true
         end
     else
         if game:GetService("Workspace").Map["Temple of Time"].Lever.Lever.CFrame.Z > Doorsau.Z + Door2 or game:GetService("Workspace").Map["Temple of Time"].Lever.Lever.CFrame.Z < Doorsau.Z - Door2 then 
@@ -53,7 +77,6 @@ function PullLever()
                 Image = "rbxassetid://4483345998",
                 Time = 2
             })
-            TogglePullLever:Set(false)
         end
     end
 end
