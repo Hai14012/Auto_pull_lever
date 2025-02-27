@@ -1,1 +1,102 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Hai14012/Auto_pull_lever/refs/heads/main/Join_game?token=GHSAT0AAAAAAC6IDR4T6XCZ6VRQGVNS744EZ6AP7IQ"))()
+-- Lấy đối tượng người chơi
+local plr = game:GetService("Players").LocalPlayer
+
+-- Hàm thu thập Blue Gear
+function CollectBlueGear()
+    local BlueGear = getBlueGear()
+    if BlueGear and not BlueGear.CanCollide and BlueGear.Transparency ~= 1 then
+        toTarget(plr.Character.HumanoidRootPart.Position, BlueGear.Position, BlueGear.CFrame)
+    elseif BlueGear and BlueGear.Transparency == 1 then
+        if (getHighestPoint().CFrame * CFrame.new(0, 211.88, 0).Position - plr.Character.HumanoidRootPart.Position).Magnitude > 10 then
+            toTarget(plr.Character.HumanoidRootPart.Position, getHighestPoint().Position, getHighestPoint().CFrame * CFrame.new(0, 211.88, 0))
+        else
+            workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, game:GetService("Lighting"):GetMoonDirection() + workspace.CurrentCamera.CFrame.Position)
+            task.wait(0.1)
+            game:service("VirtualInputManager"):SendKeyEvent(true, "T", false, game)
+            task.wait()
+            game:service("VirtualInputManager"):SendKeyEvent(false, "T", false, game)
+            task.wait(1.5)
+        end
+    end
+end
+
+-- Hàm đổi server bằng webhook
+function Webhook_Hop()
+    local success, result = pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/Hai14012/Auto_pull_lever/main/mirage.lua"))()
+    end)
+    if not success then
+        warn("Lỗi khi tải script từ GitHub: ", result)
+    end
+end
+
+-- Hàm kiểm tra thời gian trong game
+function function7()
+    local GameTime = "Error"
+    local c2 = game.Lighting.ClockTime
+    if c2 >= 18 or c2 < 5 then
+        GameTime = "Night"
+    else
+        GameTime = "Day"
+    end
+    return GameTime
+end
+
+-- Hàm kéo cần gạt Race V4
+function PullLever()
+    if not game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("CheckTempleDoor") then 
+        if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") and function7() == "Night" then
+            local v213 = game.ReplicatedStorage.Remotes.CommF_:InvokeServer("RaceV4Progress", "Check")
+            if v213 == 1 then
+                game.ReplicatedStorage.Remotes.CommF_:InvokeServer("RaceV4Progress", "Begin")
+            elseif v213 == 2 then
+                local targetPos = CFrame.new(2956.78, 2281.85, -7217.63)
+                if (targetPos.Position - plr.Character.HumanoidRootPart.Position).Magnitude > 8 then 
+                    toTarget(plr.Character.HumanoidRootPart.Position, targetPos.Position, targetPos)
+                else
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("RaceV4Progress", "Teleport")
+                end
+            elseif v213 == 3 then
+                game.ReplicatedStorage.Remotes.CommF_:InvokeServer("RaceV4Progress", "Continue")
+            else
+                CollectBlueGear()
+            end
+        elseif game:GetService("Workspace").Map:FindFirstChild("MysticIsland") and function7() ~= "Night" then 
+            OrionLib:MakeNotification({
+                Name = "Haidz Hub",
+                Content = "Waiting for Night",
+                Image = "rbxassetid://4483345998",
+                Time = 3
+            })
+            task.wait(5)
+        elseif not game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then 
+            repeat 
+                Webhook_Hop()
+                task.wait(5)
+            until HopServer == true
+        end
+    else
+        local lever = game:GetService("Workspace").Map["Temple of Time"].Lever
+        if lever and lever.Lever.CFrame.Z > Doorsau.Z + Door2 or lever.Lever.CFrame.Z < Doorsau.Z - Door2 then 
+            if (plr.Character.HumanoidRootPart.Position - lever.Part.Position).Magnitude > 10 then
+                toTarget(plr.Character.HumanoidRootPart.Position, lever.Part.Position, lever.Part.CFrame)
+            else
+                pcall(function()
+                    fireproximityprompt(lever.Prompt.ProximityPrompt, 1)
+                end)
+            end
+        else
+            OrionLib:MakeNotification({
+                Name = "Haidz Hub",
+                Content = "Pull Lever Complete",
+                Image = "rbxassetid://4483345998",
+                Time = 2
+            })
+        end
+    end
+end
+
+-- Chạy script
+PullLever()
 
