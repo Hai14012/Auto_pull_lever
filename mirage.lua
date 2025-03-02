@@ -1,1 +1,1 @@
-game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", "1a1165b8-b463-4c14-9dda-4def4fcd7683")
+game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport", "fb2cb3bd-3b8b-4cef-b461-6961461b58b9")
