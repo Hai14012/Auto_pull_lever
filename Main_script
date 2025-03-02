@@ -1,5 +1,4 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Hai14012/Auto_pull_lever/refs/heads/main/Join_game?token=GHSAT0AAAAAAC6IDR4T6XCZ6VRQGVNS744EZ6AP7IQ"))()
--- Lấy đối tượng người chơi
+
 local plr = game:GetService("Players").LocalPlayer
 
 -- Hàm thu thập Blue Gear
