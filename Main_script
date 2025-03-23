@@ -1,5 +1,40 @@
-
 local plr = game:GetService("Players").LocalPlayer
+
+-- Hàm kiểm tra thời gian trong game
+function getGameTime()
+    local c2 = game.Lighting.ClockTime
+    return (c2 >= 18 or c2 < 5) and "Night" or "Day"
+end
+
+-- Hàm di chuyển đến mục tiêu
+function toTarget(startPos, targetPos, targetCFrame)
+    if (startPos - targetPos).Magnitude > 5 then
+        plr.Character.HumanoidRootPart.CFrame = targetCFrame
+    end
+end
+
+-- Hàm lấy Blue Gear
+function getBlueGear()
+    for _, v in pairs(workspace:GetChildren()) do
+        if v:IsA("Part") and v.Name == "Blue Gear" then
+            return v
+        end
+    end
+    return nil
+end
+
+-- Hàm lấy điểm cao nhất trong game
+function getHighestPoint()
+    local maxY = -math.huge
+    local highestPart = nil
+    for _, v in pairs(workspace:GetChildren()) do
+        if v:IsA("Part") and v.Position.Y > maxY then
+            maxY = v.Position.Y
+            highestPart = v
+        end
+    end
+    return highestPart or plr.Character.HumanoidRootPart
+end
 
 -- Hàm thu thập Blue Gear
 function CollectBlueGear()
@@ -7,8 +42,9 @@ function CollectBlueGear()
     if BlueGear and not BlueGear.CanCollide and BlueGear.Transparency ~= 1 then
         toTarget(plr.Character.HumanoidRootPart.Position, BlueGear.Position, BlueGear.CFrame)
     elseif BlueGear and BlueGear.Transparency == 1 then
-        if (getHighestPoint().CFrame * CFrame.new(0, 211.88, 0).Position - plr.Character.HumanoidRootPart.Position).Magnitude > 10 then
-            toTarget(plr.Character.HumanoidRootPart.Position, getHighestPoint().Position, getHighestPoint().CFrame * CFrame.new(0, 211.88, 0))
+        local highestPoint = getHighestPoint()
+        if (highestPoint.CFrame * CFrame.new(0, 211.88, 0)).Position - plr.Character.HumanoidRootPart.Position).Magnitude > 10 then
+            toTarget(plr.Character.HumanoidRootPart.Position, highestPoint.Position, highestPoint.CFrame * CFrame.new(0, 211.88, 0))
         else
             workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, game:GetService("Lighting"):GetMoonDirection() + workspace.CurrentCamera.CFrame.Position)
             task.wait(0.1)
@@ -30,38 +66,26 @@ function Webhook_Hop()
     end
 end
 
--- Hàm kiểm tra thời gian trong game
-function function7()
-    local GameTime = "Error"
-    local c2 = game.Lighting.ClockTime
-    if c2 >= 18 or c2 < 5 then
-        GameTime = "Night"
-    else
-        GameTime = "Day"
-    end
-    return GameTime
-end
-
 -- Hàm kéo cần gạt Race V4
 function PullLever()
     if not game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("CheckTempleDoor") then 
-        if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") and function7() == "Night" then
-            local v213 = game.ReplicatedStorage.Remotes.CommF_:InvokeServer("RaceV4Progress", "Check")
-            if v213 == 1 then
+        if game:GetService("Workspace").Map:FindFirstChild("MysticIsland") and getGameTime() == "Night" then
+            local progress = game.ReplicatedStorage.Remotes.CommF_:InvokeServer("RaceV4Progress", "Check")
+            if progress == 1 then
                 game.ReplicatedStorage.Remotes.CommF_:InvokeServer("RaceV4Progress", "Begin")
-            elseif v213 == 2 then
+            elseif progress == 2 then
                 local targetPos = CFrame.new(2956.78, 2281.85, -7217.63)
                 if (targetPos.Position - plr.Character.HumanoidRootPart.Position).Magnitude > 8 then 
                     toTarget(plr.Character.HumanoidRootPart.Position, targetPos.Position, targetPos)
                 else
                     game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("RaceV4Progress", "Teleport")
                 end
-            elseif v213 == 3 then
+            elseif progress == 3 then
                 game.ReplicatedStorage.Remotes.CommF_:InvokeServer("RaceV4Progress", "Continue")
             else
                 CollectBlueGear()
             end
-        elseif game:GetService("Workspace").Map:FindFirstChild("MysticIsland") and function7() ~= "Night" then 
+        elseif game:GetService("Workspace").Map:FindFirstChild("MysticIsland") and getGameTime() ~= "Night" then 
             OrionLib:MakeNotification({
                 Name = "Haidz Hub",
                 Content = "Waiting for Night",
@@ -69,7 +93,8 @@ function PullLever()
                 Time = 3
             })
             task.wait(5)
-        elseif not game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then 
+        else 
+            local HopServer = false
             repeat 
                 Webhook_Hop()
                 task.wait(5)
@@ -77,7 +102,7 @@ function PullLever()
         end
     else
         local lever = game:GetService("Workspace").Map["Temple of Time"].Lever
-        if lever and lever.Lever.CFrame.Z > Doorsau.Z + Door2 or lever.Lever.CFrame.Z < Doorsau.Z - Door2 then 
+        if lever then
             if (plr.Character.HumanoidRootPart.Position - lever.Part.Position).Magnitude > 10 then
                 toTarget(plr.Character.HumanoidRootPart.Position, lever.Part.Position, lever.Part.CFrame)
             else
@@ -98,4 +123,3 @@ end
 
 -- Chạy script
 PullLever()
-
